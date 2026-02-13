@@ -25,7 +25,11 @@
         <button type="submit" id="load-btn">Load</button>
       </form>
       <p id="error-msg" class="hidden"></p>
-      <p class="bookmarklet-hint">or use the <a href="/bookmarklet.html">bookmarklet</a> for paywalled articles</p>
+      <div class="alt-inputs">
+        <span><label id="pdf-upload-label" for="pdf-upload">Upload PDF</label><input type="file" id="pdf-upload" accept=".pdf" hidden></span>
+        <span class="separator">|</span>
+        <span><a href="/bookmarklet.html">Bookmarklet</a> for paywalled articles</span>
+      </div>
     </div>
 
     <div id="reader-section" class="hidden">

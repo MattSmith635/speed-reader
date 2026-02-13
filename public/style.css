@@ -87,20 +87,28 @@ header h1 {
   margin-top: 0.75rem;
 }
 
-.bookmarklet-hint {
+.alt-inputs {
   text-align: center;
   margin-top: 0.75rem;
   font-size: 0.8rem;
   color: #555;
 }
 
-.bookmarklet-hint a {
+.alt-inputs a,
+.alt-inputs label {
   color: #5a5aff;
   text-decoration: none;
+  cursor: pointer;
 }
 
-.bookmarklet-hint a:hover {
+.alt-inputs a:hover,
+.alt-inputs label:hover {
   text-decoration: underline;
+}
+
+.alt-inputs .separator {
+  margin: 0 0.5rem;
+  color: #333;
 }
 
 /* Reader */
