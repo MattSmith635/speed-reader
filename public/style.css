@@ -87,6 +87,22 @@ header h1 {
   margin-top: 0.75rem;
 }
 
+.bookmarklet-hint {
+  text-align: center;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.bookmarklet-hint a {
+  color: #5a5aff;
+  text-decoration: none;
+}
+
+.bookmarklet-hint a:hover {
+  text-decoration: underline;
+}
+
 /* Reader */
 #reader-section {
   margin-top: 2rem;

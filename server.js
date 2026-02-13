@@ -6,7 +6,8 @@ const path = require("path");
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.post("/api/extract", async (req, res) => {
@@ -64,6 +65,75 @@ app.post("/api/extract", async (req, res) => {
     res
       .status(500)
       .json({ error: `Extraction failed: ${err.message}` });
+  }
+});
+
+// Helper: extract article from raw HTML
+function extractFromHTML(html, url) {
+  const dom = new JSDOM(html, { url: url || "https://example.com" });
+  const reader = new Readability(dom.window.document);
+  const article = reader.parse();
+  if (!article) return null;
+
+  const text = article.textContent
+    .replace(/\r\n/g, "\n")
+    .replace(/[ \t]*\n[ \t]*/g, "\n")
+    .replace(/\n{2,}/g, " \u00b6 ")
+    .replace(/\n/g, " ")
+    .replace(/ {2,}/g, " ")
+    .trim();
+
+  return {
+    title: article.title,
+    text,
+    wordCount: text.split(/\s+/).length,
+  };
+}
+
+// Bookmarklet form POST: receives HTML, serves the app with article pre-loaded
+app.post("/bookmarklet", (req, res) => {
+  const { html, url } = req.body;
+  if (!html) {
+    return res.redirect("/");
+  }
+
+  try {
+    const article = extractFromHTML(html, url);
+    if (!article) {
+      return res.redirect("/?error=Could+not+extract+readable+content");
+    }
+
+    // Read the index.html and inject the article data before the closing </body>
+    const fs = require("fs");
+    const indexHtml = fs.readFileSync(
+      path.join(__dirname, "public", "index.html"),
+      "utf-8"
+    );
+    const injection = `<script>window.__PRELOADED_ARTICLE__ = ${JSON.stringify(article)};</script>`;
+    const page = indexHtml.replace('<script src="app.js">', `${injection}\n<script src="app.js">`);
+    res.send(page);
+  } catch (err) {
+    res.redirect("/?error=Extraction+failed");
+  }
+});
+
+// JSON API for bookmarklet: receives raw HTML + URL, returns extracted text
+app.post("/api/extract-html", (req, res) => {
+  const { html, url } = req.body;
+  if (!html) {
+    return res.status(400).json({ error: "HTML content is required" });
+  }
+
+  try {
+    const article = extractFromHTML(html, url);
+    if (!article) {
+      return res
+        .status(422)
+        .json({ error: "Could not extract readable content" });
+    }
+    res.json(article);
+  } catch (err) {
+    res.status(500).json({ error: `Extraction failed: ${err.message}` });
   }
 });
 

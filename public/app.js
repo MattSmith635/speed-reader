@@ -22,6 +22,14 @@
   let intervalId = null;
   let isPlaying = false;
 
+  // --- Bookmarklet support ---
+  // If the page was served via the bookmarklet POST, article data is pre-injected
+  if (window.__PRELOADED_ARTICLE__) {
+    const data = window.__PRELOADED_ARTICLE__;
+    delete window.__PRELOADED_ARTICLE__;
+    initReader(data.title, data.text);
+  }
+
   // --- URL Loading ---
 
   urlForm.addEventListener("submit", async (e) => {

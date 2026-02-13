@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speed Reader — Bookmarklet</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #app { max-width: 680px; }
+
+    .instructions { margin-top: 2rem; }
+    .instructions h2 {
+      font-size: 1.2rem;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .instructions ol {
+      padding-left: 1.5rem;
+      line-height: 2;
+      color: #bbb;
+    }
+    .instructions li { margin-bottom: 0.5rem; }
+
+    .bookmarklet-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.75rem 2rem;
+      background: #5a5aff;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: grab;
+    }
+    .bookmarklet-link:hover { background: #4a4ae0; }
+
+    .note {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #141420;
+      border: 1px solid #2a2a3a;
+      border-radius: 8px;
+      color: #888;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    a.back {
+      display: inline-block;
+      margin-top: 2rem;
+      color: #5a5aff;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    a.back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Speed Reader</h1>
+      <p class="subtitle">Bookmarklet Setup</p>
+    </header>
+
+    <div class="instructions">
+      <h2>Install</h2>
+      <ol>
+        <li>Drag the button below to your <strong>bookmarks bar</strong>.</li>
+        <li>Navigate to any article you want to speed-read.</li>
+        <li>Click the <strong>Speed Read</strong> bookmark.</li>
+        <li>The article will open in Speed Reader, ready to go.</li>
+      </ol>
+
+      <p style="text-align: center;">
+        <a id="bookmarklet" class="bookmarklet-link" href="#">Speed Read</a>
+      </p>
+
+      <div class="note">
+        <strong>Why a bookmarklet?</strong> It runs in your browser on the page you're already viewing,
+        so it works with paywalled articles, login-gated content, and sites that block server-side scraping.
+        If you can read it, the bookmarklet can extract it.
+      </div>
+    </div>
+
+    <a class="back" href="/">&larr; Back to Speed Reader</a>
+  </div>
+
+  <script>
+    // Build the bookmarklet dynamically so it always points to the correct origin.
+    // The bookmarklet creates a hidden form, stuffs the page HTML into it,
+    // and POSTs it to /bookmarklet which returns the Speed Reader with the article loaded.
+    const origin = window.location.origin;
+    const code = [
+      "javascript:void((function(){",
+        "var d=document,f=d.createElement('form');",
+        "f.method='POST';",
+        "f.action='" + origin + "/bookmarklet';",
+        "f.target='_blank';",
+        "var h=d.createElement('textarea');",
+        "h.name='html';",
+        "h.value=d.documentElement.outerHTML;",
+        "h.style.display='none';",
+        "f.appendChild(h);",
+        "var u=d.createElement('input');",
+        "u.type='hidden';",
+        "u.name='url';",
+        "u.value=d.location.href;",
+        "f.appendChild(u);",
+        "d.body.appendChild(f);",
+        "f.submit();",
+        "d.body.removeChild(f);",
+      "})())"
+    ].join("");
+
+    document.getElementById("bookmarklet").href = code;
+  </script>
+</body>
+</html>
