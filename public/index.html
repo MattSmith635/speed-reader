@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speed Reader</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Speed Reader</h1>
+      <p class="subtitle">Rapid Serial Visual Presentation</p>
+    </header>
+
+    <div id="input-section">
+      <form id="url-form">
+        <input
+          type="url"
+          id="url-input"
+          placeholder="Paste an article URL..."
+          required
+          autocomplete="off"
+        >
+        <button type="submit" id="load-btn">Load</button>
+      </form>
+      <p id="error-msg" class="hidden"></p>
+    </div>
+
+    <div id="reader-section" class="hidden">
+      <h2 id="article-title"></h2>
+
+      <div id="rsvp-display">
+        <div id="focus-guides">
+          <span class="guide top-left"></span>
+          <span class="guide top-right"></span>
+          <span class="guide bottom-left"></span>
+          <span class="guide bottom-right"></span>
+        </div>
+        <div id="focus-marker"></div>
+        <div id="word-container">
+          <span id="word-before"></span><span id="word-focus"></span><span id="word-after"></span>
+        </div>
+      </div>
+
+      <div id="progress-bar">
+        <div id="progress-fill"></div>
+      </div>
+
+      <div id="controls-info">
+        <div class="info-row">
+          <span id="wpm-display">500 WPM</span>
+          <span id="word-counter">0 / 0</span>
+        </div>
+        <div class="info-row hints">
+          <span><kbd>Space</kbd> Start / Pause</span>
+          <span><kbd>Z</kbd> Slower</span>
+          <span><kbd>X</kbd> Faster</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="loading-overlay" class="hidden">
+      <div class="spinner"></div>
+      <p>Extracting article...</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0a0a0f;
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#app {
+  width: 100%;
+  max-width: 1080px;
+  padding: 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+/* URL Input */
+#url-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#url-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: #141420;
+  border: 1px solid #2a2a3a;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#url-input:focus {
+  border-color: #5a5aff;
+}
+
+#load-btn {
+  padding: 0.75rem 1.5rem;
+  background: #5a5aff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#load-btn:hover {
+  background: #4a4ae0;
+}
+
+#load-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#error-msg {
+  color: #ff5a5a;
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+/* Reader */
+#reader-section {
+  margin-top: 2rem;
+}
+
+#article-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #aaa;
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.4;
+}
+
+/* RSVP Display */
+#rsvp-display {
+  position: relative;
+  height: 180px;
+  background: #12121e;
+  border-radius: 12px;
+  border: 1px solid #1e1e30;
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 5.6rem;
+  font-weight: 500;
+  user-select: none;
+  overflow: hidden;
+}
+
+#focus-marker {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  border-left: 2px dashed #333;
+  pointer-events: none;
+}
+
+#word-container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+#word-before {
+  color: #555;
+}
+
+#word-focus {
+  color: #ff5a5a;
+  font-weight: 700;
+}
+
+#word-after {
+  color: #555;
+}
+
+/* Focus guide brackets */
+.guide {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: #333;
+  border-style: solid;
+}
+
+.guide.top-left {
+  top: 10px;
+  left: 10px;
+  border-width: 2px 0 0 2px;
+}
+
+.guide.top-right {
+  top: 10px;
+  right: 10px;
+  border-width: 2px 2px 0 0;
+}
+
+.guide.bottom-left {
+  bottom: 10px;
+  left: 10px;
+  border-width: 0 0 2px 2px;
+}
+
+.guide.bottom-right {
+  bottom: 10px;
+  right: 10px;
+  border-width: 0 2px 2px 0;
+}
+
+/* Progress Bar */
+#progress-bar {
+  height: 6px;
+  background: #2a2a3a;
+  border-radius: 3px;
+  margin-top: 1rem;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #5a5aff;
+  transition: width 0.05s linear;
+  pointer-events: none;
+}
+
+/* Controls Info */
+#controls-info {
+  margin-top: 1.25rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-row.hints {
+  margin-top: 0.75rem;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.info-row.hints span {
+  font-size: 0.75rem;
+  color: #555;
+}
+
+#wpm-display {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #5a5aff;
+}
+
+#word-counter {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.1em 0.45em;
+  font-family: inherit;
+  font-size: 0.85em;
+  color: #888;
+  background: #1a1a28;
+  border: 1px solid #2a2a3a;
+  border-radius: 4px;
+}
+
+/* Loading */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(10, 10, 15, 0.85);
+  gap: 1rem;
+  z-index: 10;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #2a2a3a;
+  border-top-color: #5a5aff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Utilities */
+.hidden {
+  display: none !important;
+}
+
+/* Paused state indicator */
+#rsvp-display.paused {
+  border-color: #2a2a3a;
+}
+
+#rsvp-display.playing {
+  border-color: #5a5aff;
+}
