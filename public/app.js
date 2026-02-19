@@ -30,47 +30,6 @@
     initReader(data.title, data.text);
   }
 
-  // --- PDF Upload ---
-
-  const pdfUpload = document.getElementById("pdf-upload");
-
-  pdfUpload.addEventListener("change", async () => {
-    const file = pdfUpload.files[0];
-    if (!file) return;
-
-    if (file.size > 10 * 1024 * 1024) {
-      errorMsg.textContent = "PDF exceeds 10 MB limit";
-      errorMsg.classList.remove("hidden");
-      pdfUpload.value = "";
-      return;
-    }
-
-    errorMsg.classList.add("hidden");
-    loadingOverlay.classList.remove("hidden");
-
-    try {
-      const res = await fetch("/api/extract-pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/octet-stream" },
-        body: file,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to extract PDF");
-      }
-
-      initReader(data.title, data.text);
-    } catch (err) {
-      errorMsg.textContent = err.message;
-      errorMsg.classList.remove("hidden");
-    } finally {
-      loadingOverlay.classList.add("hidden");
-      pdfUpload.value = "";
-    }
-  });
-
   // --- URL Loading ---
 
   urlForm.addEventListener("submit", async (e) => {
@@ -277,6 +236,42 @@
     updateProgress();
   });
 
+  // --- UI Helpers ---
+
+  const playPauseBtn = document.getElementById("play-pause-btn");
+
+  function updatePlayPauseLabel() {
+    playPauseBtn.textContent = isPlaying ? "Pause" : "Start";
+  }
+
+  function slower() {
+    wpm = Math.max(50, wpm - 50);
+    updateWpm();
+    if (isPlaying) {
+      clearTimeout(intervalId);
+      intervalId = setTimeout(advance, getDelay());
+    }
+  }
+
+  function faster() {
+    wpm = Math.min(1500, wpm + 50);
+    updateWpm();
+    if (isPlaying) {
+      clearTimeout(intervalId);
+      intervalId = setTimeout(advance, getDelay());
+    }
+  }
+
+  // --- Button Controls ---
+
+  playPauseBtn.addEventListener("click", () => {
+    togglePlayPause();
+    updatePlayPauseLabel();
+  });
+
+  document.getElementById("slower-btn").addEventListener("click", slower);
+  document.getElementById("faster-btn").addEventListener("click", faster);
+
   // --- Keyboard Controls ---
 
   document.addEventListener("keydown", (e) => {
@@ -287,25 +282,15 @@
       case "Space":
         e.preventDefault();
         togglePlayPause();
+        updatePlayPauseLabel();
         break;
 
       case "KeyZ":
-        wpm = Math.max(50, wpm - 50);
-        updateWpm();
-        // If playing, restart timing with new speed
-        if (isPlaying) {
-          clearTimeout(intervalId);
-          intervalId = setTimeout(advance, getDelay());
-        }
+        slower();
         break;
 
       case "KeyX":
-        wpm = Math.min(1500, wpm + 50);
-        updateWpm();
-        if (isPlaying) {
-          clearTimeout(intervalId);
-          intervalId = setTimeout(advance, getDelay());
-        }
+        faster();
         break;
     }
   });

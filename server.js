@@ -1,7 +1,6 @@
 const express = require("express");
 const { Readability } = require("@mozilla/readability");
 const { JSDOM } = require("jsdom");
-const { PDFParse } = require("pdf-parse");
 const path = require("path");
 
 const app = express();
@@ -37,18 +36,6 @@ app.post("/api/extract", async (req, res) => {
         .json({ error: `Failed to fetch URL: ${response.status}` });
     }
 
-    const contentType = response.headers.get("content-type") || "";
-    const isPDF = contentType.includes("application/pdf") || url.toLowerCase().endsWith(".pdf");
-
-    if (isPDF) {
-      const buffer = Buffer.from(await response.arrayBuffer());
-      const article = await extractFromPDF(buffer);
-      if (!article) {
-        return res.status(422).json({ error: "Could not extract text from PDF" });
-      }
-      return res.json(article);
-    }
-
     const html = await response.text();
     const dom = new JSDOM(html, { url });
     const reader = new Readability(dom.window.document);
@@ -82,25 +69,6 @@ function normalizeText(raw) {
     .replace(/\n/g, " ")
     .replace(/ {2,}/g, " ")
     .trim();
-}
-
-// Helper: extract text from a PDF buffer (in memory, nothing written to disk)
-async function extractFromPDF(buffer) {
-  const parser = new PDFParse({ data: buffer });
-  const info = await parser.load();
-  const result = await parser.getText();
-  const meta = await parser.getInfo();
-  parser.destroy();
-
-  const allText = result.pages.map((p) => p.text).join("\n\n");
-  const text = normalizeText(allText);
-  if (!text) return null;
-
-  return {
-    title: meta?.info?.Title || "PDF Document",
-    text,
-    wordCount: text.split(/\s+/).length,
-  };
 }
 
 // Helper: extract article from raw HTML
@@ -163,37 +131,6 @@ app.post("/api/extract-html", (req, res) => {
   } catch (err) {
     res.status(500).json({ error: `Extraction failed: ${err.message}` });
   }
-});
-
-// PDF file upload: receives raw PDF bytes, extracts text in memory
-const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10 MB
-app.post("/api/extract-pdf", (req, res) => {
-  const chunks = [];
-  let size = 0;
-
-  req.on("data", (chunk) => {
-    size += chunk.length;
-    if (size > MAX_PDF_SIZE) {
-      req.destroy();
-      return res.status(413).json({ error: "PDF exceeds 10 MB limit" });
-    }
-    chunks.push(chunk);
-  });
-
-  req.on("end", async () => {
-    if (res.headersSent) return;
-    const buffer = Buffer.concat(chunks);
-
-    try {
-      const article = await extractFromPDF(buffer);
-      if (!article) {
-        return res.status(422).json({ error: "Could not extract text from PDF" });
-      }
-      res.json(article);
-    } catch (err) {
-      res.status(500).json({ error: `PDF extraction failed: ${err.message}` });
-    }
-  });
 });
 
 app.listen(PORT, () => {
